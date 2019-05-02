@@ -1,4 +1,2 @@
 asteroids
-makeheaders
-headers/
-obj/
+*.o
