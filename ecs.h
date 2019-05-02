@@ -76,6 +76,9 @@ EcsMask ecs_id_to_mask(int id);
 // Initialize the ECS
 void ecs_init(void);
 
+// Destroy the ECS and free all memory
+void ecs_free(void);
+
 
 //
 // Entity management

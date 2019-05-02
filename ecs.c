@@ -52,6 +52,24 @@ void ecs_init(void) {
 }
 
 
+// Destroy the ECS and free all memory
+void ecs_free(void) {
+  for(int i = 0; i < num_entities; i++) {
+    if(!entities[i].alive)
+      continue;
+
+    for(int j = 0; j < NUM_COMPONENTS; j++) {
+      if(entities[i].component_mask & ((EcsMask)1<<j))
+        free(entities[i].components[j]);
+    }
+  }
+
+  num_entities = 0;
+  free(entities);
+  entities = NULL;
+}
+
+
 //
 // Entity management
 //

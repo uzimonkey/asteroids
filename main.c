@@ -14,5 +14,5 @@ int main(void) {
   }
 
   ecs_iterate_component(POS, print_it);
-  printf("%d\n", sum(1,2,3));
+  //ecs_free();
 }
