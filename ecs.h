@@ -1,3 +1,6 @@
+#ifndef ECS_H
+#define ECS_H
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -38,12 +41,14 @@ typedef struct {
   float y;
 } VEL;
 
+#define COMPONENT_NONE 0
 enum { 
   COMPONENT_POS,
   COMPONENT_VEL,
   NUM_COMPONENTS
 };
 
+#define FLAG_NONE 0
 enum {
   FLAG_PLAYER,
   FLAG_ENEMY,
@@ -52,20 +57,39 @@ enum {
 
 
 //
-// Functions
+// Utility Functions
+//
+// Is this EcsID valid?
+bool ecs_is_valid(EcsID ent);
+
+// Convert and ID to a mask
+EcsMask ecs_id_to_mask(int id);
+#define ecs_component_type_to_mask(type)\
+  ecs_id_to_mask(COMPONENT_##type)
+#define ecs_flag_id_to_mask(type)\
+  ecs_id_to_mask(FLAG_##type)
+
+
+//
+// Initialization and teardown
 //
 // Initialize the ECS
 void ecs_init(void);
 
+
+//
+// Entity management
+//
 // Create a new entity and return its ID
 EcsID ecs_create_entity(void);
 
 // Destroy an entity
 void ecs_destroy_entity(EcsID id);
 
-// Is this EcsID valid?
-extern inline bool is_valid(EcsID ent);
 
+//
+// Component management
+//
 // Add a component
 void *ecs_add_component(EcsID ent, int id, size_t size);
 #define ecs_add_component(ent, type)\
@@ -85,3 +109,32 @@ bool ecs_has_component(EcsID ent, int id);
 void *ecs_get_component(EcsID ent, int id);
 #define ecs_get_component(ent, type)\
   ecs_get_component(ent, COMPONENT_##type)
+
+
+//
+// Flag management
+//
+// Does the entity have this flag?
+bool ecs_has_flag(EcsID ent, int id);
+
+// Set flag on entity
+void ecs_set_flag(EcsID ent, int id);
+
+// Clear flag on entity
+void ecs_clear_flag(EcsID ent, int id);
+
+
+//
+// Iteration
+//
+// Iterate over all entities. If the entity has all the
+// components in cmask and all the flags in fmask, then
+// call the function func.
+void ecs_iterate(EcsMask cmask, EcsMask fmask, void (*func)(EcsID));
+#define ecs_iterate_component(comp, func)\
+  ecs_iterate(ecs_component_type_to_mask(comp), 0, func);
+#define ecs_iterate_flag(flag, func)\
+  ecs_iterate(0, ecs_flag_id_to_mask(flag), func);
+
+
+#endif

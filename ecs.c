@@ -7,9 +7,9 @@
 #undef ecs_has_component
 #undef ecs_get_component
 
-int num_entities;
+static int num_entities;
 
-struct {
+static struct {
   int version;
   bool alive;
   EcsMask component_mask;
@@ -27,19 +27,34 @@ static void resize(int new_size) {
 }
 
 
+//
+// Utility Functions
+//
 // Is this EcsID valid?
-inline bool is_valid(EcsID ent) {
+bool ecs_is_valid(EcsID ent) {
   return ent.id >= 0 && ent.id < num_entities
     && entities[ent.id].version == ent.version;
 }
 
 
+// Convert and ID to a mask
+EcsMask ecs_id_to_mask(int id) {
+  return (EcsMask)1 << id;
+}
+
+
+//
+// Initialization and teardown
+//
 // Initialize the ECS
 void ecs_init(void) {
   resize(POOL_SIZE);
 }
 
 
+//
+// Entity management
+//
 // Create a new entity and return its ID
 EcsID ecs_create_entity(void) {
   int idx = 0;
@@ -57,7 +72,7 @@ EcsID ecs_create_entity(void) {
 
 // Destroy an entity
 void ecs_destroy_entity(EcsID ent) {
-  if(!is_valid(ent)) return;
+  if(!ecs_is_valid(ent)) return;
 
   entities[ent.id].version++;
   entities[ent.id].alive = false;
@@ -70,10 +85,13 @@ void ecs_destroy_entity(EcsID ent) {
 }
 
 
+//
+// Component management
+//
 // Add a component
 void *ecs_add_component(EcsID ent, int id, size_t size) {
   EcsMask mask = 1 << id;
-  if(!is_valid(ent) || (entities[ent.id].component_mask & mask) != 0)
+  if(!ecs_is_valid(ent) || (entities[ent.id].component_mask & mask) != 0)
     return NULL;
 
   entities[ent.id].component_mask |= mask;
@@ -87,7 +105,7 @@ void *ecs_add_component(EcsID ent, int id, size_t size) {
 // Remove a component
 void ecs_remove_component(EcsID ent, int id) {
   EcsMask mask = 1 << id;
-  if(!is_valid(ent) || (entities[ent.id].component_mask & mask) == 0)
+  if(!ecs_is_valid(ent) || (entities[ent.id].component_mask & mask) == 0)
     return;
 
   entities[ent.id].component_mask &= ~mask;
@@ -97,14 +115,54 @@ void ecs_remove_component(EcsID ent, int id) {
 
 // Does this entity have this component?
 bool ecs_has_component(EcsID ent, int id) {
-  return is_valid(ent) && !!(entities[ent.id].component_mask & (1<<id));
+  return ecs_is_valid(ent) && !!(entities[ent.id].component_mask & (1<<id));
 }
 
 
 // Get a component, returns NULL on error
 void *ecs_get_component(EcsID ent, int id) {
   EcsMask mask = 1 << id;
-  if(!is_valid(ent) || !(entities[ent.id].component_mask & mask))
+  if(!ecs_is_valid(ent) || !(entities[ent.id].component_mask & mask))
     return NULL;
   return entities[ent.id].components[id];
+}
+
+
+//
+// Flag management
+//
+// Does the entity have this flag?
+bool ecs_has_flag(EcsID ent, int id) {
+  return ecs_is_valid(ent)
+    && !!(entities[ent.id].flag_mask & ecs_id_to_mask(id));
+}
+
+// Set flag on entity
+void ecs_set_flag(EcsID ent, int id) {
+  if(ecs_is_valid(ent))
+    entities[ent.id].flag_mask |= ecs_id_to_mask(id);
+}
+
+// Clear flag on entity
+void ecs_clear_flag(EcsID ent, int id) {
+  if(ecs_is_valid(ent))
+    entities[ent.id].flag_mask &= ~ecs_id_to_mask(id);
+}
+
+
+//
+// Iteration
+//
+// Iterate over all entities. If the entity has all the
+// components in cmask and all the flags in fmask, then
+// call the function func.
+void ecs_iterate(EcsMask cmask, EcsMask fmask, void (*func)(EcsID)) {
+  for(int i = 0; i < num_entities; i++) {
+    if(entities[i].alive
+        && (entities[i].component_mask & cmask) == cmask
+        && (entities[i].flag_mask & fmask) == fmask
+      ) {
+      func((EcsID){.id=i, .version=entities[i].version});
+    }
+  }
 }
