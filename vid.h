@@ -50,8 +50,11 @@ void vid_begin_frame(void);
 // End a frame. This pushes it to the device and may wait for vsync if enabled.
 void vid_end_frame(void);
 
+// Set a render color for future calls to render objects
+void vid_set_color(Color c);
+
 // Draw the outline of a rectangle
-void vid_draw_rect(Rect r, Color c);
+void vid_draw_rect(Rect r);
 
 
 

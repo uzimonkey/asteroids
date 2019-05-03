@@ -66,12 +66,15 @@ EcsMask ecs_id_to_mask(int id);
 #define ecs_flag_id_to_mask(type)\
   ecs_id_to_mask(FLAG_##type)
 
+// Get the last error
+const char *ecs_get_error(void);
+
 
 //
 // Initialization and teardown
 //
 // Initialize the ECS
-void ecs_start(void);
+bool ecs_start(void);
 
 // Destroy the ECS and free all memory
 void ecs_stop(void);

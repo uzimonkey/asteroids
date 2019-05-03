@@ -3,7 +3,7 @@
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
-static const char *error;
+static const char *error = "";
 
 //
 // Utility
@@ -18,7 +18,7 @@ const char *vid_get_error(void) {
 //
 // Start the vid module
 bool vid_start(void) {
-  if(SDL_Init(SDL_INIT_EVERYTHING))
+  if(SDL_InitSubSystem(SDL_INIT_VIDEO))
     goto error;
 
   window = SDL_CreateWindow(
@@ -47,7 +47,7 @@ error:
 
 // Stop the vid module
 void vid_stop(void) {
-  SDL_Quit();
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 
@@ -58,6 +58,7 @@ void vid_stop(void) {
 void vid_begin_frame(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 }
 
 // End a frame. This pushes it to the device and may wait for vsync if enabled.
@@ -65,9 +66,13 @@ void vid_end_frame(void) {
   SDL_RenderPresent(renderer);
 }
 
-// Draw the outline of a rectangle
-void vid_draw_rect(Rect r, Color c) {
+// Set a render color for future calls to render objects
+void vid_set_color(Color c) {
   SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
+}
+
+// Draw the outline of a rectangle
+void vid_draw_rect(Rect r) {
   SDL_RenderDrawRect(
       renderer,
       &(SDL_Rect){

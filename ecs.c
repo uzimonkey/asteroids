@@ -8,7 +8,6 @@
 #undef ecs_get_component
 
 static int num_entities;
-
 static struct {
   int version;
   bool alive;
@@ -17,6 +16,7 @@ static struct {
   void *components[NUM_COMPONENTS];
 } *entities;
 
+static const char* error = "";
 
 
 // Resize ecs to be able to hold new_size number of entities
@@ -43,12 +43,25 @@ EcsMask ecs_id_to_mask(int id) {
 }
 
 
+// Get the last error
+const char *ecs_get_error(void) {
+  return error;
+}
+
+
 //
 // Initialization and teardown
 //
 // Initialize the ECS
-void ecs_start(void) {
+bool ecs_start(void) {
   resize(POOL_SIZE);
+
+  if(!entities) {
+    error = "Could not allocate entities";
+    return false;
+  }
+
+  return true;
 }
 
 
