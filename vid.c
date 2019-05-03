@@ -72,13 +72,6 @@ void vid_set_color(Color c) {
 }
 
 // Draw the outline of a rectangle
-void vid_draw_rect(Rect r) {
-  SDL_RenderDrawRect(
-      renderer,
-      &(SDL_Rect){
-        .x = r.x,
-        .y = r.y,
-        .w = r.w,
-        .h = r.h
-      });
+void vid_draw_rect(float x, float y, float w, float h) {
+  SDL_RenderDrawRect(renderer, &(SDL_Rect){.x=x, .y=y, .w=w, .h=h});
 }

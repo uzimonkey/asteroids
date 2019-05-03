@@ -7,8 +7,8 @@
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-#define VIRTUAL_WIDTH 320
-#define VIRTUAL_HEIGHT 240
+#define SCENE_WIDTH 640
+#define SCENE_HEIGHT 480
 
 
 //
@@ -54,7 +54,7 @@ void vid_end_frame(void);
 void vid_set_color(Color c);
 
 // Draw the outline of a rectangle
-void vid_draw_rect(Rect r);
+void vid_draw_rect(float x, float y, float w, float h);
 
 
 

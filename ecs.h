@@ -36,19 +36,21 @@ typedef struct {
 // Components
 //
 typedef Vec2f POS;
+typedef Vec2f SIZE;
 typedef Vec2f VEL;
 
 #define COMPONENT_NONE 0
 enum { 
   COMPONENT_POS,
   COMPONENT_VEL,
+  COMPONENT_SIZE,
   NUM_COMPONENTS
 };
 
 #define FLAG_NONE 0
 enum {
+  FLAG_RECT,
   FLAG_PLAYER,
-  FLAG_ENEMY,
   NUM_FLAGS
 };
 
@@ -60,10 +62,10 @@ enum {
 bool ecs_is_valid(EcsID ent);
 
 // Convert and ID to a mask
-EcsMask ecs_id_to_mask(int id);
-#define ecs_component_type_to_mask(type)\
+#define ecs_id_to_mask(id) ((EcsMask)1 << (id))
+#define ecs_component_mask(type)\
   ecs_id_to_mask(COMPONENT_##type)
-#define ecs_flag_id_to_mask(type)\
+#define ecs_flag_mask(type)\
   ecs_id_to_mask(FLAG_##type)
 
 // Get the last error
@@ -118,13 +120,19 @@ void *ecs_get_component(EcsID ent, int id);
 // Flag management
 //
 // Does the entity have this flag?
-bool ecs_has_flag(EcsID ent, int id);
+bool ecs_has_flags(EcsID ent, EcsMask fmask);
+#define ecs_has_flag(ent, flag)\
+  ecs_has_flags(ent, ecs_flag_mask(flag))
 
 // Set flag on entity
-void ecs_set_flag(EcsID ent, int id);
+void ecs_set_flags(EcsID ent, EcsMask fmask);
+#define ecs_set_flag(ent, flag)\
+  ecs_set_flags(ent, ecs_flag_mask(flag))
 
 // Clear flag on entity
-void ecs_clear_flag(EcsID ent, int id);
+void ecs_clear_flags(EcsID ent, EcsMask fmask);
+#define ecs_clear_flag(ent, flag)\
+  ecs_clear_flags(ent, ecs_flag_mask(flag))
 
 
 //
@@ -135,9 +143,19 @@ void ecs_clear_flag(EcsID ent, int id);
 // call the function func.
 void ecs_iterate(EcsMask cmask, EcsMask fmask, void (*func)(EcsID));
 #define ecs_iterate_component(comp, func)\
-  ecs_iterate(ecs_component_type_to_mask(comp), 0, func);
+  ecs_iterate(ecs_component_mask(comp), 0, func);
 #define ecs_iterate_flag(flag, func)\
-  ecs_iterate(0, ecs_flag_id_to_mask(flag), func);
+  ecs_iterate(0, ecs_flag_mask(flag), func);
 
+
+//
+// Searching
+//
+// Find the first entity with matching flag and component mask
+EcsID ecs_find(EcsMask cmask, EcsMask fmask);
+#define ecs_find_component(comp)\
+  ecs_find(ecs_component_mask(comp), 0);
+#define ecs_find_flag(flag)\
+  ecs_find(0, ecs_flag_mask(flag));
 
 #endif

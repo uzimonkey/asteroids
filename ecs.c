@@ -37,12 +37,6 @@ bool ecs_is_valid(EcsID ent) {
 }
 
 
-// Convert and ID to a mask
-EcsMask ecs_id_to_mask(int id) {
-  return (EcsMask)1 << id;
-}
-
-
 // Get the last error
 const char *ecs_get_error(void) {
   return error;
@@ -163,21 +157,21 @@ void *ecs_get_component(EcsID ent, int id) {
 // Flag management
 //
 // Does the entity have this flag?
-bool ecs_has_flag(EcsID ent, int id) {
+bool ecs_has_flags(EcsID ent, EcsMask fmask) {
   return ecs_is_valid(ent)
-    && !!(entities[ent.id].flag_mask & ecs_id_to_mask(id));
+    && !!(entities[ent.id].flag_mask & fmask);
 }
 
 // Set flag on entity
-void ecs_set_flag(EcsID ent, int id) {
+void ecs_set_flags(EcsID ent, EcsMask fmask) {
   if(ecs_is_valid(ent))
-    entities[ent.id].flag_mask |= ecs_id_to_mask(id);
+    entities[ent.id].flag_mask |= fmask;
 }
 
 // Clear flag on entity
-void ecs_clear_flag(EcsID ent, int id) {
+void ecs_clear_flags(EcsID ent, EcsMask fmask) {
   if(ecs_is_valid(ent))
-    entities[ent.id].flag_mask &= ~ecs_id_to_mask(id);
+    entities[ent.id].flag_mask &= ~fmask;
 }
 
 
@@ -196,4 +190,22 @@ void ecs_iterate(EcsMask cmask, EcsMask fmask, void (*func)(EcsID)) {
       func((EcsID){.id=i, .version=entities[i].version});
     }
   }
+}
+
+
+//
+// Searching
+//
+// Find the first entity with matching flag and component mask
+EcsID ecs_find(EcsMask cmask, EcsMask fmask) {
+  for(int i = 0; i < num_entities; i++) {
+    if(entities[i].alive
+        && (entities[i].component_mask & cmask) == cmask
+        && (entities[i].flag_mask & fmask) == fmask
+      ) {
+      return (EcsID){.id=i, .version=entities[i].version};
+    }
+  }
+
+  return (EcsID){.id=-1};
 }

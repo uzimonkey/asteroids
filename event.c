@@ -31,12 +31,12 @@ const char *event_get_error(void) {
 //
 // Start the event module
 bool event_start(void) {
-  if(SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS) == -1) {
+  if(SDL_InitSubSystem(SDL_INIT_EVENTS) == -1) {
     error = SDL_GetError();
     return false;
   }
 
-  memset(keys, 0, sizeof(keys) * sizeof(*keys));
+  memset(keys, 0, sizeof(keys));
 
   return true;
 }
