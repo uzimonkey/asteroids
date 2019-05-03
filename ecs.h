@@ -12,6 +12,11 @@
 // and flags
 typedef uint32_t EcsMask;
 
+typedef struct {
+  float x;
+  float y;
+} Vec2f;
+
 // An EcsID is returned by the ECS to refer to an entity
 typedef struct {
   int id;
@@ -30,16 +35,8 @@ typedef struct {
 //
 // Components
 //
-typedef struct {
-  float x;
-  float y;
-} POS;
-
-
-typedef struct {
-  float x;
-  float y;
-} VEL;
+typedef Vec2f POS;
+typedef Vec2f VEL;
 
 #define COMPONENT_NONE 0
 enum { 
@@ -74,10 +71,10 @@ EcsMask ecs_id_to_mask(int id);
 // Initialization and teardown
 //
 // Initialize the ECS
-void ecs_init(void);
+void ecs_start(void);
 
 // Destroy the ECS and free all memory
-void ecs_free(void);
+void ecs_stop(void);
 
 
 //

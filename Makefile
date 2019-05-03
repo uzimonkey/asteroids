@@ -1,7 +1,7 @@
 CC=clang
-CFLAGS=-Wall -std=c11 -pedantic
+CFLAGS=-Wall -std=c11 -pedantic `pkg-config --cflags sdl2`
 LDFLAGS=
-LIBS=
+LIBS=`pkg-config --libs sdl2`
 
 SRC=$(wildcard *.c)
 HEAD=$(wildcard *.h)
@@ -37,10 +37,6 @@ asteroids: $(OBJ) FORCE
 	$(CC) $(LDFLAGS) $(OBJ) $(LIBS) -o asteroids
 
 FORCE:
-
-.phony: run
-run: debug
-	./asteroids
 
 $(PROFILE)/%.o: %.c $(HEAD)
 	@mkdir -p $(PROFILE)

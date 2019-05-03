@@ -47,13 +47,13 @@ EcsMask ecs_id_to_mask(int id) {
 // Initialization and teardown
 //
 // Initialize the ECS
-void ecs_init(void) {
+void ecs_start(void) {
   resize(POOL_SIZE);
 }
 
 
 // Destroy the ECS and free all memory
-void ecs_free(void) {
+void ecs_stop(void) {
   for(int i = 0; i < num_entities; i++) {
     if(!entities[i].alive)
       continue;

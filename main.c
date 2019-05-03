@@ -1,5 +1,7 @@
 #include "ecs.h"
+#include "vid.h"
 #include <stdio.h>
+#include <SDL_events.h>
 
 void print_it(EcsID id) {
   POS *pos = ecs_get_component(id, POS);
@@ -7,12 +9,20 @@ void print_it(EcsID id) {
 }
 
 int main(void) {
-  ecs_init();
-  for(int i = 0; i < 10; i++) {
-    EcsID id = ecs_create_entity();
-    *(POS*)ecs_add_component(id, POS) = (POS){.x=i, .y=i};
+  vid_start();
+  ecs_start();
+
+  for(;;) {
+    for(SDL_Event e; SDL_PollEvent(&e);) {
+      if(e.type == SDL_QUIT) goto done;
+    }
+
+    vid_begin_frame();
+    vid_draw_rect((Rect){0, 0, 10, 10}, (Color){255, 255, 255, 255});
+    vid_end_frame();
   }
 
-  ecs_iterate_component(POS, print_it);
-  //ecs_free();
+done:
+  ecs_stop();
+  vid_stop();
 }
