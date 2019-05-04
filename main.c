@@ -27,7 +27,7 @@ int main(void) {
     player_sys_move();
 
     vid_begin_frame();
-    sys_render();
+    render_sys_render();
     vid_end_frame();
   }
 

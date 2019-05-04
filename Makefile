@@ -34,16 +34,16 @@ OBJ:=$(SRC:%.c=$(PROFILE)/%.o)
 release: asteroids
 debug: asteroids
 asteroids: $(OBJ) FORCE
-	$(CC) $(LDFLAGS) $(OBJ) $(LIBS) -o asteroids
+	@echo Linking $@
+	@$(CC) $(LDFLAGS) $(OBJ) $(LIBS) -o asteroids
 
 FORCE:
 
 $(PROFILE)/%.o: %.c $(HEAD)
+	@echo $<
 	@mkdir -p $(PROFILE)
-	$(CC) $(CFLAGS) $< -c -o $@
+	@$(CC) $(CFLAGS) $< -c -o $@
 
 .phony: clean
 clean:
 	rm -rf debug/ release/ asteroids
-
-.SECONDEXPANSION:

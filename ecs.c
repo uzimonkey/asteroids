@@ -11,6 +11,7 @@ static int num_entities;
 static struct {
   int version;
   bool alive;
+  bool immortal;
   EcsMask component_mask;
   EcsMask flag_mask;
   void *components[NUM_COMPONENTS];
@@ -62,7 +63,7 @@ bool ecs_start(void) {
 // Destroy the ECS and free all memory
 void ecs_stop(void) {
   for(int i = 0; i < num_entities; i++) {
-    if(!entities[i].alive)
+    if(!entities[i].alive && !entities[i].immortal)
       continue;
 
     for(int j = 0; j < NUM_COMPONENTS; j++) {
@@ -83,7 +84,9 @@ void ecs_stop(void) {
 // Create a new entity and return its ID
 EcsID ecs_create_entity(void) {
   int idx = 0;
-  for(; idx < num_entities && entities[idx].alive; idx++);
+  for(;
+      idx < num_entities && (entities[idx].alive || entities[idx].immortal);
+      idx++);
   
   if(idx == num_entities)
     resize(num_entities*2);
@@ -95,13 +98,38 @@ EcsID ecs_create_entity(void) {
 }
 
 
+// Reincarnate an entity
+void ecs_reincarnate(EcsID ent) {
+  if(!ecs_is_valid(ent) || entities[ent.id].alive || !entities[ent.id].immortal)
+    return;
+
+  entities[ent.id].alive = true;
+}
+
+
+// Set an entity to be immortal. Immortal entities can be reincarnated.
+void ecs_set_immortal(EcsID ent, bool immortality) {
+  if(!ecs_is_valid(ent))
+    return;
+
+  entities[ent.id].immortal = immortality;
+}
+
+// Returns whether an entity is immortal
+bool ecs_is_immortal(EcsID ent) {
+  return ecs_is_valid(ent) && entities[ent.id].immortal;
+}
+
 // Destroy an entity
-void ecs_destroy_entity(EcsID ent) {
-  if(!ecs_is_valid(ent)) return;
+void ecs_kill_entity(EcsID ent) {
+  if(!ecs_is_valid(ent))
+    return;
+
+  entities[ent.id].alive = false;
+  if(entities[ent.id].immortal)
+    return;
 
   entities[ent.id].version++;
-  entities[ent.id].alive = false;
-
   for(int i = 0; i < NUM_COMPONENTS; i++)
     if((EcsMask)1 << i & entities[ent.id].component_mask) {
       free(entities[ent.id].components[i]);

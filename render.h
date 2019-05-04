@@ -2,6 +2,6 @@
 #define RENDER_H
 
 // System: Render all renderable objects
-void sys_render(void);
+void render_sys_render(void);
 
 #endif

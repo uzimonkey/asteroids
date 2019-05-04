@@ -1,19 +1,17 @@
 #include "ecs.h"
 #include "vid.h"
 
-static void render_rectangle(EcsID eid) {
-  POS *p = ecs_get_component(eid, POS);
-  SIZE *s = ecs_get_component(eid, SIZE);
-  vid_draw_rect(p->x, p->y, s->y, s->x);
+static void sprite(EcsID ent) {
+  POS *p = ecs_get_component(ent, POS);
+  TEX *t = ecs_get_component(ent, TEX);
+  vid_draw_sprite(*t, p->x, p->y);
 }
 
-static void render_rectangles(void) {
-  static EcsMask cmask = ecs_component_mask(POS) | ecs_component_mask(SIZE);
-  static EcsMask fmask = ecs_flag_mask(RECT);
-  ecs_iterate(cmask, fmask, render_rectangle);
+static void sprites(void) {
+  ecs_iterate(ecs_component_mask(POS) | ecs_component_mask(TEX), 0, sprite);
 }
 
-void sys_render(void) {
-  render_rectangles();
+void render_sys_render(void) {
+  sprites();
 }
 

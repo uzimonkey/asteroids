@@ -1,6 +1,7 @@
 #ifndef ECS_H
 #define ECS_H
 
+#include "vid.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -36,14 +37,12 @@ typedef struct {
 // Components
 //
 typedef Vec2f POS;
-typedef Vec2f SIZE;
-typedef Vec2f VEL;
+typedef TextureID TEX;
 
 #define COMPONENT_NONE 0
 enum { 
   COMPONENT_POS,
-  COMPONENT_VEL,
-  COMPONENT_SIZE,
+  COMPONENT_TEX,
   NUM_COMPONENTS
 };
 
@@ -88,8 +87,17 @@ void ecs_stop(void);
 // Create a new entity and return its ID
 EcsID ecs_create_entity(void);
 
-// Destroy an entity
-void ecs_destroy_entity(EcsID id);
+// Reincarnate an entity
+void ecs_reincarnate(EcsID ent);
+
+// Set an entity to be immortal. Immortal entities can be reincarnated.
+void ecs_set_immortal(EcsID ent, bool immortalit);
+
+// Returns whether an entity is immortal
+bool ecs_is_immortal(EcsID ent);
+
+// Kill an entity
+void ecs_kill_entity(EcsID ent);
 
 
 //

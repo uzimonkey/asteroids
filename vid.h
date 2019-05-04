@@ -23,12 +23,27 @@ typedef struct {
   uint8_t r, g, b, a;
 } Color;
 
+typedef int TextureID;
+
 
 //
 // Utility
 //
 // Return the last error
 const char *vid_get_error(void);
+
+
+//
+// Loading assets
+//
+// Find an already-loaded texture
+TextureID vid_find_loaded_texture(const char *filename);
+
+// Load a texture and return a pointer to it
+TextureID vid_load_texture(const char *filename);
+
+// Free a texture
+void vid_free_texture(TextureID tex);
 
 
 //
@@ -55,6 +70,9 @@ void vid_set_color(Color c);
 
 // Draw the outline of a rectangle
 void vid_draw_rect(float x, float y, float w, float h);
+
+// Draw a sprite
+void vid_draw_sprite(TextureID tid, float x, float y);
 
 
 
