@@ -8,7 +8,7 @@
 
 #define THRUST 100
 
-#define ANGULAR_DRAG 0.3
+#define ANGULAR_DRAG 0.8
 #define ANGULAR_DRAG_SENSITIVITY 0.05
 
 #define DRAG 0.1

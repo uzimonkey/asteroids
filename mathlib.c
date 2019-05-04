@@ -18,3 +18,26 @@ Vec2 rotate(Vec2 v, double a) {
     .y = v.y*cos(a) + v.x*sin(a)
   };
 }
+
+double magnitude(Vec2 v) {
+  return sqrt(v.x*v.x + v.y*v.y);
+}
+
+double sqr_magnitude(Vec2 v) {
+  return v.x*v.x + v.y*v.y;
+}
+
+Vec2 normalize(Vec2 v) {
+  double mag = magnitude(v);
+  return (Vec2){
+    .x = v.x / mag,
+    .y = v.y / mag
+  };
+}
+
+Vec2 invert(Vec2 v) {
+  return (Vec2){
+    .x = -v.x,
+    .y = -v.y
+  };
+}

@@ -14,6 +14,7 @@ static void player_start(void) {
   pid = ecs_create_entity();
   ecs_set_immortal(pid, true);
   ecs_set_flag(pid, PLAYER);
+  ecs_set_flag(pid, WRAP);
 
   xform = ecs_add_component(pid, TRANSFORM);
 
@@ -44,10 +45,13 @@ void player_sys(float delta_time) {
 
   // Thrust
   if(event_key_down(UP)) {
+    physics->drag = 0;
     Vec2 thrust_input = rotate((Vec2){0, -THRUST}, xform->rot);
     physics->vel = (Vec2){
       .x = physics->vel.x + thrust_input.x * delta_time,
       .y = physics->vel.y + thrust_input.y * delta_time};
+  } else {
+    physics->drag = lerp(physics->drag, DRAG, DRAG_SENSITIVITY * delta_time);
   }
 }
 

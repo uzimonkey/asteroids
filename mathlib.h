@@ -12,5 +12,9 @@ double lerp(double a, double b, double t);
 double sign(double a);
 
 Vec2 rotate(Vec2 v, double a);
+double magnitude(Vec2 v);
+double sqr_magnitude(Vec2 v);
+Vec2 normalize(Vec2 v);
+Vec2 invert(Vec2 v);
 
 #endif
