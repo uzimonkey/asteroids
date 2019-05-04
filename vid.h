@@ -7,8 +7,8 @@
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-#define SCENE_WIDTH 640
-#define SCENE_HEIGHT 480
+#define SCENE_WIDTH 1920
+#define SCENE_HEIGHT 1440
 
 
 //
@@ -72,7 +72,7 @@ void vid_set_color(Color c);
 void vid_draw_rect(float x, float y, float w, float h);
 
 // Draw a sprite
-void vid_draw_sprite(TextureID tid, float x, float y);
+void vid_draw_sprite(TextureID tid, float x, float y, float rot);
 
 
 

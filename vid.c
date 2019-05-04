@@ -82,6 +82,7 @@ TextureID vid_load_texture(const char *filename) {
     goto done;
   }
 
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
   textures[idx].tex = SDL_CreateTextureFromSurface(renderer, surf);
   if(textures[idx].tex == NULL) {
     error = SDL_GetError();
@@ -157,6 +158,7 @@ void vid_begin_frame(void) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  SDL_RenderSetLogicalSize(renderer, SCENE_WIDTH, SCENE_HEIGHT);
 }
 
 // End a frame. This pushes it to the device and may wait for vsync if enabled.
@@ -175,11 +177,11 @@ void vid_draw_rect(float x, float y, float w, float h) {
 }
 
 // Draw a sprite
-void vid_draw_sprite(TextureID tid, float x, float y) {
+void vid_draw_sprite(TextureID tid, float x, float y, float rot) {
   if(tid < 0 || tid > num_textures || textures[tid].tex == NULL)
     return;
 
-  SDL_RenderCopy(
+  SDL_RenderCopyEx(
       renderer,
       textures[tid].tex,
       NULL,
@@ -188,6 +190,9 @@ void vid_draw_sprite(TextureID tid, float x, float y) {
         .y = y - textures[tid].h/2,
         .w = textures[tid].w,
         .h = textures[tid].h
-      });
+      },
+      rot,
+      NULL,
+      (SDL_RendererFlip){0});
 }
 

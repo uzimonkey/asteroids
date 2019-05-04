@@ -2,6 +2,7 @@
 #define ECS_H
 
 #include "vid.h"
+#include "mathlib.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -12,11 +13,6 @@
 // The mask determines the maximum number of component types
 // and flags
 typedef uint32_t EcsMask;
-
-typedef struct {
-  float x;
-  float y;
-} Vec2f;
 
 // An EcsID is returned by the ECS to refer to an entity
 typedef struct {
@@ -36,19 +32,30 @@ typedef struct {
 //
 // Components
 //
-typedef Vec2f POS;
+typedef struct {
+  Vec2 pos;
+  float rot;
+} TRANSFORM;
+
+typedef struct {
+  Vec2 vel;
+  float drag;
+  float angular_vel;
+  float angular_drag;
+} PHYSICS;
+
 typedef TextureID TEX;
 
 #define COMPONENT_NONE 0
 enum { 
-  COMPONENT_POS,
+  COMPONENT_TRANSFORM,
+  COMPONENT_PHYSICS,
   COMPONENT_TEX,
   NUM_COMPONENTS
 };
 
 #define FLAG_NONE 0
 enum {
-  FLAG_RECT,
   FLAG_PLAYER,
   NUM_FLAGS
 };

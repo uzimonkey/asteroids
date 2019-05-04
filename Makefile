@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-Wall -std=c11 -pedantic `pkg-config --cflags sdl2`
 LDFLAGS=
-LIBS=`pkg-config --libs sdl2`
+LIBS=`pkg-config --libs sdl2` -lm
 
 SRC=$(wildcard *.c)
 HEAD=$(wildcard *.h)

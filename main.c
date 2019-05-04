@@ -3,6 +3,8 @@
 #include "event.h"
 #include "render.h"
 #include "player.h"
+#include "stopwatch.h"
+#include "physics.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,13 +20,20 @@ int main(void) {
   start(event);
   start(vid);
   start(ecs);
+  start(physics);
+
+  Stopwatch s = stopwatch_start();
 
   player_spawn();
   for(;;) {
     if(event_process() || event_key_pressed(ESCAPE))
       goto done;
 
-    player_sys_move();
+    double delta_time = stopwatch_time(s);
+    s = stopwatch_start();
+
+    player_sys(delta_time);
+    physics_sys(delta_time);
 
     vid_begin_frame();
     render_sys_render();
@@ -32,6 +41,7 @@ int main(void) {
   }
 
 done:
+  stop(physics);
   stop(ecs);
   stop(vid);
   stop(event);
